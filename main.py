@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -25,3 +26,7 @@ def register(request: Request):
 @app.post("/register")
 def test_register(username: str = Form(...), password: str = Form(...)):
     return {"username": username, "password": password}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
