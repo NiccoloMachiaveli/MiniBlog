@@ -2,8 +2,12 @@ import uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from database.database import engine, Base
+from database import models
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
 
 templates = Jinja2Templates(directory="templates")
 
