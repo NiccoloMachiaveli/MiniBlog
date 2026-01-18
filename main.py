@@ -2,7 +2,8 @@ import uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from database.database import engine, Base
+from database.database import engine, Base, SessionLocal
+from database.models import User
 from database import models
 
 app = FastAPI()
@@ -29,7 +30,22 @@ def register(request: Request):
 
 @app.post("/register")
 def test_register(username: str = Form(...), password: str = Form(...)):
-    return {"username": username, "password": password}
+    db = SessionLocal()
+    try:
+        new_user = User(username=username, password=password)
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return post_page()
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        db.close()
+
+
+@app.get("/post", response_class=HTMLResponse)
+def post_page(request: Request):
+    return templates.TemplateResponse("blog.html", {"request": request})
 
 
 if __name__ == "__main__":
