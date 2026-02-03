@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from database.database import engine, Base, SessionLocal
 from database.models import User
 from database import models
+from fastapi.responses import RedirectResponse
 
 app = FastAPI()
 
@@ -36,7 +37,7 @@ def test_register(username: str = Form(...), password: str = Form(...)):
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        return post_page()
+        return RedirectResponse(url="/post", status_code=302)
     except Exception as e:
         print(f"Error: {e}")
     finally:

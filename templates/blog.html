@@ -5,6 +5,34 @@
     <title>MiniBlog</title>
 </head>
 <body>
-    <button type="submit">Создать пост</button>
+    {% if success_message %}
+        <p class="message success">{{ success_message }}</p>
+    {% endif %}
+    {% if error_message %}
+        <p class="message error">{{ error_message }}</p>
+    {% endif %}
+    {% if errors %}
+        <ul class="message error">
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" action="/post">
+        <label>
+            Заголовок
+            <input type="text" name="title" placeholder="Введите заголовок" required>
+        </label>
+        <label>
+            Текст
+            <textarea name="content" placeholder="Введите текст" required></textarea>
+        </label>
+        <label>
+            Автор
+            <input type="text" name="author" placeholder="Введите имя автора">
+        </label>
+        <button type="submit">Создать пост</button>
+    </form>
 </body>
 </html>
