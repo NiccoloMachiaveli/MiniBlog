@@ -5,6 +5,9 @@
     <title>Авторизация</title>
 </head>
 <body>
+{% if error_message %}
+    <p class="message error">{{ error_message }}</p>
+{% endif %}
 <form action="/login" method="post">
     <p>
     <label for="name">Введите логин:</label>

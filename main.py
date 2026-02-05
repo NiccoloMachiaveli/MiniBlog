@@ -6,8 +6,10 @@ from database.database import engine, Base, SessionLocal
 from database.models import User
 from database import models
 from fastapi.responses import RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="change-me-secret-key")
 
 Base.metadata.create_all(bind=engine)
 
@@ -50,17 +52,35 @@ def register(request: Request):
 
 
 @app.post("/login")
-def login():
-    pass
+def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.username == username).first()
+        if not user or user.password != password:
+            return templates.TemplateResponse(
+                "login.html",
+                {"request": request, "error_message": "Incorrect username or password"},
+            )
+        request.session["user_id"] = user.id
+        request.session["username"] = user.username
+        return RedirectResponse(url="/post", status_code=302)
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        db.close()
 
 
 @app.get("/protected")
-def protected():
-    pass
+def protected(request: Request):
+    if not request.session.get("user_id"):
+        return RedirectResponse(url="/login", status_code=302)
+    return {"ok": True}
 
 
 @app.get("/post", response_class=HTMLResponse)
 def post_page(request: Request):
+    if not request.session.get("user_id"):
+        return RedirectResponse(url="/login", status_code=302)
     return templates.TemplateResponse("blog.html", {"request": request})
 
 
