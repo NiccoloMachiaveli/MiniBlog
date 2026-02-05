@@ -44,6 +44,16 @@ def test_register(username: str = Form(...), password: str = Form(...)):
         db.close()
 
 
+@app.post("/login")
+def login():
+    pass
+
+
+@app.get("/protected")
+def protected():
+    pass
+
+
 @app.get("/post", response_class=HTMLResponse)
 def post_page(request: Request):
     return templates.TemplateResponse("blog.html", {"request": request})
