@@ -44,6 +44,11 @@ def test_register(username: str = Form(...), password: str = Form(...)):
         db.close()
 
 
+@app.get("/login", response_class=HTMLResponse)
+def register(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
 @app.post("/login")
 def login():
     pass
