@@ -84,5 +84,19 @@ def post_page(request: Request):
     return templates.TemplateResponse("blog.html", {"request": request})
 
 
+@app.post("/post")
+def save_post(request: Request, username: str = Form(...), title: str = Form(...), content: str = Form(...)):
+    if not request.session.get("user_id"):
+        return RedirectResponse(url="/login", status_code=302)
+    db = SessionLocal()
+    try:
+        pass
+    except:
+        pass
+    finally:
+        pass
+    return
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
