@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from database.database import engine, Base, SessionLocal
-from database.models import User
+from database.models import User, Post
 from database import models
 from fastapi.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
@@ -85,17 +85,23 @@ def post_page(request: Request):
 
 
 @app.post("/post")
-def save_post(request: Request, username: str = Form(...), title: str = Form(...), content: str = Form(...)):
+def save_post(request: Request, title: str = Form(...), content: str = Form(...)):
     if not request.session.get("user_id"):
         return RedirectResponse(url="/login", status_code=302)
     db = SessionLocal()
+    user_id = request.session.get("user_id")
     try:
-        pass
-    except:
-        pass
+        post = Post(title=title, content=content, user_id=user_id)
+        db.add(post)
+        db.commit()
+        db.refresh(post)
+        return RedirectResponse(url="/post", status_code=302)
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return RedirectResponse(url="/post", status_code=302)
     finally:
-        pass
-    return
+        db.close()
 
 
 if __name__ == "__main__":
